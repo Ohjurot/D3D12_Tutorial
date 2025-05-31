@@ -67,9 +67,11 @@ cmox_unit_test_src = nil
 -- end
 
 -- This function is called for each project when it's beeing configured
--- function cmox_function_setupproject()
---     ...
--- end
+function cmox_function_setupproject()
+    includedirs {
+        "%{wks.location}vendor/d3d12_sdk/include",
+    }
+end
 
 -- This function is called in manual configuration to include 
 -- the project
