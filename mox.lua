@@ -4,18 +4,20 @@
 -- PRODUCT NAME
 -- This the name used for the product provided by this repo
 -- (On windows used as the solution name)
-cmox_product_name = "MoxPP"
+cmox_product_name = "D3D12Tutorial"
 
 -- CONFIGURATIONS
 -- The first array _n are the configuration names
 -- The second array _d are the configuration debug flags 
 -- (use true on all debugging configurations)
 cmox_configurations_n = { 
-    "Debug",  
+    "Debug",
+    "Develop",
     "Release",   
 }
 cmox_configurations_d = { 
     true,
+    false,
     false,
 }
 
@@ -40,21 +42,21 @@ cmox_src_folder = "src"
 -- "manual"         Projects are not loaded by the MoxPP
 --                  provide the "cmox_function_includeprojects"
 --                  function.
-cmox_project_architecture = "single" 
+cmox_project_architecture = "flat" 
 
 -- DLL DISTRIBUTING
 -- When enabled, dlls will be copied as a postbuild-step to the output directory
-cmox_copy_dlls = true
+cmox_copy_dlls = false
 
 -- MACRO PREFIX
 -- This will be prepended to ALL non default macros
-cmox_macro_prefix = "MOXPP_"
+cmox_macro_prefix = "DXT_"
 
 -- UNITTEST
 -- This defines where to find the unit test code.
 -- You can set this to nil. When set to nil no test will be configured. 
 -- You can delete the default test folder then
-cmox_unit_test_src = "test"
+cmox_unit_test_src = nil
 
 -- === Custom callback functions ===
 -- This is the way to go when implementing custom features
