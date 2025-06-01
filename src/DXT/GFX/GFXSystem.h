@@ -36,6 +36,10 @@ namespace DXT
     class GFXSystem
     {
         public:
+            GFXSystem() = default;
+            GFXSystem(const GFXSystem&) = delete;
+            GFXSystem& operator=(const GFXSystem&) = delete;
+
             /*!
              * @brief Initializes the GFX subsystem
              */
@@ -60,6 +64,16 @@ namespace DXT
                 return m_gpus;
             }
 
+            /*!
+             * @brief 
+             * @param gpu GPU (adapter) To create device for
+             * @param minimumDeviceLevel Minimum device feature level
+             * @param riid IID Of interface
+             * @param ppDevice Pointer to Pointer of interface
+             * @return HRESULT error code
+             */
+            HRESULT CreateDevice(const GFXGpuDescription& gpu, D3D_FEATURE_LEVEL minimumDeviceLevel, REFIID riid, void** ppDevice);
+
         private:
             Logger m_logger = GetLogger("gfx");
 
@@ -80,7 +94,7 @@ namespace DXT
      * @brief 
      * @return Reference to gfx system
      */
-    inline static GFXSystem& GetGFXSystem()
+    inline GFXSystem& GetGFXSystem()
     {
         static GFXSystem instance;
         return instance;

@@ -172,3 +172,13 @@ void DXT::GFXSystem::PollDebugMessage()
     m_dxgiInfoQueue->ClearStoredMessages(DXGI_DEBUG_ALL);
     #endif
 }
+
+HRESULT DXT::GFXSystem::CreateDevice(const GFXGpuDescription& gpu, D3D_FEATURE_LEVEL minimumDeviceLevel, REFIID riid, void** ppDevice)
+{
+    ComPointer<IDXGIAdapter> adapter;
+    DXT_THROWON_HRFAIL(
+        m_dxgiFactory->EnumAdapterByLuid(gpu.GpuId, IID_PPV_ARGS(&adapter)),
+        "IDXGIFactory6::EnumAdapterByLuid(...) for GPU with name {}", gpu.GpuName
+    );
+    return D3D12CreateDevice(adapter, minimumDeviceLevel, riid, ppDevice);
+}

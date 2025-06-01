@@ -12,6 +12,13 @@
     } \
 )
 
+#define DXT_THROWON_FAIL_GETLASTERROR(expression, ...) DXT_CODE( \
+    if(!(expression)) \
+    { \
+        throw ::DXT::HRException(GetLastError(), __VA_ARGS__); \
+    } \
+)
+
 namespace DXT
 {
     /*!
