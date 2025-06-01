@@ -4,6 +4,7 @@
 #include <DXT/GFX/GFXInstance.h>
 #include <DXT/Windowing/BasicWindow.h>
 
+#include <array>
 #include <memory>
 
 namespace DXT
@@ -21,6 +22,17 @@ namespace DXT
             ~GFXWindow();
 
             /*!
+             * @brief Indicates if the windows size in no longer matching the swap chain size and thus the swap chain required resizing
+             * @return True if resize is required
+             */
+            bool RequiresResizing();
+
+            /*!
+             * @brief Resized the swap chain to match the owning windows size
+             */
+            void ResizeNow();
+
+            /*!
              * @brief Presents the frame to the user
              * @param vsync True indicated v syncing with the monitor
              */
@@ -29,9 +41,31 @@ namespace DXT
             LRESULT OnWindowMessage(HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
 
         private:
+            /*!
+             * @brief Retrieves all buffer's from the swap chain and setups view
+             */
+            void GetSwapChainResources();
+
+            /*!
+             * @brief Release all open reference to the swap chain
+             */
+            void ReleaseSwapChainResources();
+
+        private:
+            inline static const auto SWAP_CHAIN_FLAGS = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH | DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
+
             Logger m_logger = GetLogger("gfx");
+
             std::shared_ptr<GFXInstance> m_gfx;
+            ComPointer<ID3D12Device> m_device;
 
             ComPointer<IDXGISwapChain1> m_swapChain;
+            uint32_t m_swapChainWidth = 0;
+            uint32_t m_swapChainHeight = 0;
+
+            ComPointer<ID3D12DescriptorHeap> m_buffersDescriptorHeap;
+            std::array<D3D12_CPU_DESCRIPTOR_HANDLE, BUFFER_COUNT> m_cpuBufferHandle;
+
+            std::array<ComPointer<ID3D12Resource>, BUFFER_COUNT> m_buffers;
     };
 }

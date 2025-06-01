@@ -67,7 +67,7 @@ LRESULT DXT::BasicWindow::OnWindowMessage(HWND wnd, UINT msg, WPARAM wParam, LPA
     {
         case WM_CLOSE:
             m_closeReceived = true;
-            spdlog::debug(L"Window {} received close request", m_name);
+            spdlog::info(L"Window {} received close request", m_name);
             return 0;
         case WM_SIZE:
             if (wParam == SIZE_MAXIMIZED || wParam == SIZE_RESTORED)

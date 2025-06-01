@@ -21,6 +21,11 @@ int main()
             while (!wnd->ShouldClose())
             {
                 wnd->HandlePendingWindowMessages();
+                if (wnd->RequiresResizing())
+                {
+                    gpu->FlushQueue(DXT::GFXWindow::BUFFER_COUNT);
+                    wnd->ResizeNow();
+                }
 
                 // TODO: Work on the gpu
                 gpu->FlushQueue();

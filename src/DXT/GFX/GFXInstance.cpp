@@ -22,6 +22,8 @@ DXT::GFXInstance::GFXInstance(const GFXGpuDescription& gpu)
         m_device->CreateFence(m_directCommandQueueFenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_directCommandQueueFence)),
         "ID3D12Device::CreateFence(...) failed"
     );
+
+    m_handleIncrementRTV = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 }
 
 DXT::GFXInstance::~GFXInstance()

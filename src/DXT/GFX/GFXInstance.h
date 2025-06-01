@@ -61,6 +61,10 @@ namespace DXT
             {
                 return m_directCommandQueue;
             }
+            inline auto GetRTVHandleIncement() const
+            {
+                return m_handleIncrementRTV;
+            }
 
         private:
             Logger m_logger = GetLogger("gfx");
@@ -70,5 +74,7 @@ namespace DXT
             ComPointer<ID3D12CommandQueue> m_directCommandQueue;
             ComPointer<ID3D12Fence> m_directCommandQueueFence;
             UINT64 m_directCommandQueueFenceValue = 0;
+
+            UINT m_handleIncrementRTV = 0;
     };
 }
