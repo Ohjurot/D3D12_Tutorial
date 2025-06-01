@@ -2,8 +2,8 @@
 
 #include <DXT/Common/OS.h>
 #include <DXT/GFX/GFXSystem.h>
+#include <DXT/GFX/GFXWindow.h>
 #include <DXT/GFX/GFXInstance.h>
-#include <DXT/Windowing/BasicWindow.h>
 
 extern "C" { __declspec(dllexport) extern const UINT D3D12SDKVersion = 616; }
 extern "C" { __declspec(dllexport) extern const char8_t* D3D12SDKPath = u8".\\"; }
@@ -16,13 +16,19 @@ int main()
         auto& gfx = DXT::GetGFXSystem();
         gfx.Init();
         {
-            DXT::GFXInstance gpu(gfx.GetGpus()[0]);
-            DXT::BasicWindow wnd(L"Test Window", 100, 100, 500, 500);
-            while (!wnd.ShouldClose())
+            auto gpu = std::make_shared<DXT::GFXInstance>(gfx.GetGpus()[0]);
+            auto wnd = std::make_shared<DXT::GFXWindow>(gpu, L"Test Window", 100, 100, 500, 500);
+            while (!wnd->ShouldClose())
             {
-                wnd.HandlePendingWindowMessages();
+                wnd->HandlePendingWindowMessages();
 
+                // TODO: Work on the gpu
+                gpu->FlushQueue();
+                wnd->Present();
+
+                gfx.PollDebugMessage();
             }
+            gpu->FlushQueue(DXT::GFXWindow::BUFFER_COUNT);
         }
         gfx.Shutdown();
     }

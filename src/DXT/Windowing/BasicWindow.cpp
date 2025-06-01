@@ -23,6 +23,14 @@ DXT::BasicWindow::BasicWindow(const std::wstring& name, int x, int y, int width,
         windowRect.bottom - windowRect.top
     );
     DXT_THROWON_FAIL_GETLASTERROR(m_wnd, "Failed to create window");
+
+    RECT clientRect;
+    DXT_THROWON_FAIL_GETLASTERROR(
+        GetClientRect(m_wnd, &clientRect), 
+        L"GetClientRect(...) failed for window {}", m_name
+    );
+    m_width = clientRect.right - clientRect.left;
+    m_height = clientRect.bottom - clientRect.top;
 }
 
 DXT::BasicWindow::~BasicWindow()
@@ -61,6 +69,13 @@ LRESULT DXT::BasicWindow::OnWindowMessage(HWND wnd, UINT msg, WPARAM wParam, LPA
             m_closeReceived = true;
             spdlog::debug(L"Window {} received close request", m_name);
             return 0;
+        case WM_SIZE:
+            if (wParam == SIZE_MAXIMIZED || wParam == SIZE_RESTORED)
+            {
+                m_width = LOWORD(lParam);
+                m_height = HIWORD(lParam);
+            }
+            break;
     }
     return DefWindowProcW(wnd, msg, wParam, lParam);
 }

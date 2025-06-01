@@ -65,6 +65,15 @@ namespace DXT
             }
 
             /*!
+             * @brief Exposes the factory for user otherwher
+             * @return ComPointer to the swapchain
+             */
+            inline auto GetDXGIFactory()
+            {
+                return m_dxgiFactory;
+            }
+
+            /*!
              * @brief 
              * @param gpu GPU (adapter) To create device for
              * @param minimumDeviceLevel Minimum device feature level

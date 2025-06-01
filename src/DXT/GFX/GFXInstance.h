@@ -51,7 +51,16 @@ namespace DXT
              * @brief Flushes the queue for a defined number of times
              * @param flushCounts Number of flushes
              */
-            void FlushQueue(size_t flushCounts);
+            void FlushQueue(size_t flushCounts = 1);
+
+            inline auto GetDevice()
+            {
+                return m_device;
+            }
+            inline auto GetDirectCommandQueue()
+            {
+                return m_directCommandQueue;
+            }
 
         private:
             Logger m_logger = GetLogger("gfx");
