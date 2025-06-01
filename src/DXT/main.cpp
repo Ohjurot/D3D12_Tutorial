@@ -2,6 +2,8 @@
 
 #include <DXT/Common/OS.h>
 #include <DXT/GFX/GFXSystem.h>
+#include <DXT/GFX/GFXInstance.h>
+#include <DXT/Windowing/BasicWindow.h>
 
 extern "C" { __declspec(dllexport) extern const UINT D3D12SDKVersion = 616; }
 extern "C" { __declspec(dllexport) extern const char8_t* D3D12SDKPath = u8".\\"; }
@@ -13,19 +15,19 @@ int main()
     {
         auto& gfx = DXT::GetGFXSystem();
         gfx.Init();
+        {
+            DXT::GFXInstance gpu(gfx.GetGpus()[0]);
+            DXT::BasicWindow wnd(L"Test Window", 100, 100, 500, 500);
+            while (!wnd.ShouldClose())
+            {
+                wnd.HandlePendingWindowMessages();
 
-        const auto& gpus = gfx.GetGpus();
-        ComPointer<ID3D12Device> device;
-        D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&device));
-
+            }
+        }
         gfx.Shutdown();
     }
     catch (const DXT::Exception& ex)
     {
         ex.LogException(spdlog::default_logger(), DXT::LogLevel::critical);
     }
-
-    // We will use spdlog to say hello! 
-    // So that you can see that conan works :-)
-    spdlog::warn("Hello World from version {}!", DXT_VERSION);
 }
