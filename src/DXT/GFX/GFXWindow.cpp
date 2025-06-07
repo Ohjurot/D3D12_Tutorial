@@ -46,6 +46,7 @@ DXT::GFXWindow::GFXWindow(const std::shared_ptr<GFXInstance>& gfxInstance, const
     swapChainFullscreenDesc.Windowed = true;
 
     m_logger->info(L"Initalizing swapchain to {}x{} for window \"{}\"", m_swapChainWidth, m_swapChainHeight, GetName());
+    ComPointer<IDXGISwapChain1> tempSwapChain;
     DXT_THROWON_HRFAIL(
         dxgiFactory->CreateSwapChainForHwnd(
             d3d12CommandQueue,
@@ -53,9 +54,13 @@ DXT::GFXWindow::GFXWindow(const std::shared_ptr<GFXInstance>& gfxInstance, const
             &swapChainDesc1,
             &swapChainFullscreenDesc,
             nullptr,
-            &m_swapChain
+            &tempSwapChain
         ),
         L"IDXGIFactory6::CreateSwapChainForHwnd(...) for window \"{}\" in {}x{}", GetName(), m_swapChainWidth, m_swapChainHeight
+    );
+    DXT_THROWON_FAIL(
+        tempSwapChain.QueryInterface(m_swapChain),
+        "Can't case IDXGISwapChain1 to IDXGISwapChain3"
     );
 
     GetSwapChainResources();
@@ -87,6 +92,29 @@ void DXT::GFXWindow::ResizeNow()
     );
 
     GetSwapChainResources();
+}
+
+void DXT::GFXWindow::BeginFrame(GFXCommandList& cmdList, float clearColorR, float clearColorG, float clearColorB, float clearColorA)
+{
+    m_currentBufferIndex = m_swapChain->GetCurrentBackBufferIndex();
+
+    cmdList.ResourceTransition(
+        m_buffers[m_currentBufferIndex],
+        D3D12_RESOURCE_STATE_PRESENT,
+        D3D12_RESOURCE_STATE_RENDER_TARGET
+    );
+    cmdList.FlushBarrieres();
+    cmdList.ClearRenderTarget(m_cpuBufferHandle[m_currentBufferIndex], clearColorR, clearColorG, clearColorB, clearColorA);
+}
+
+void DXT::GFXWindow::EndFrame(GFXCommandList& cmdList)
+{
+    cmdList.ResourceTransition(
+        m_buffers[m_currentBufferIndex],
+        D3D12_RESOURCE_STATE_RENDER_TARGET,
+        D3D12_RESOURCE_STATE_PRESENT
+    );
+    cmdList.FlushBarrieres();
 }
 
 void DXT::GFXWindow::Present(bool vsync /*= true*/)

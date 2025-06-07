@@ -2,6 +2,7 @@
 
 #include <DXT/GFX/GFXSystem.h>
 #include <DXT/GFX/GFXInstance.h>
+#include <DXT/GFX/GFXCommandList.h>
 #include <DXT/Windowing/BasicWindow.h>
 
 #include <array>
@@ -33,6 +34,22 @@ namespace DXT
             void ResizeNow();
 
             /*!
+             * @brief Begins a new frame
+             * @param cmdList Command list to record on
+             * @param clearColorR RED Color of window background
+             * @param clearColorG GRENN Color of window background
+             * @param clearColorB BLUE Color of window background
+             * @param clearColorA ALPHA Color of window background
+             */
+            void BeginFrame(GFXCommandList& cmdList, float clearColorR = .0f, float clearColorG = .0f, float clearColorB = .0f, float clearColorA = .0f);
+
+            /*!
+             * @brief Ends a frame
+             * @param cmdList command list to record on
+             */
+            void EndFrame(GFXCommandList& cmdList);
+
+            /*!
              * @brief Presents the frame to the user
              * @param vsync True indicated v syncing with the monitor
              */
@@ -59,13 +76,14 @@ namespace DXT
             std::shared_ptr<GFXInstance> m_gfx;
             ComPointer<ID3D12Device> m_device;
 
-            ComPointer<IDXGISwapChain1> m_swapChain;
+            ComPointer<IDXGISwapChain3> m_swapChain;
             uint32_t m_swapChainWidth = 0;
             uint32_t m_swapChainHeight = 0;
 
+            uint32_t m_currentBufferIndex = 0;
             ComPointer<ID3D12DescriptorHeap> m_buffersDescriptorHeap;
+            std::array<ComPointer<ID3D12Resource>, BUFFER_COUNT> m_buffers;
             std::array<D3D12_CPU_DESCRIPTOR_HANDLE, BUFFER_COUNT> m_cpuBufferHandle;
 
-            std::array<ComPointer<ID3D12Resource>, BUFFER_COUNT> m_buffers;
     };
 }

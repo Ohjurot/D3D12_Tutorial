@@ -4,6 +4,7 @@
 #include <DXT/GFX/GFXSystem.h>
 #include <DXT/GFX/GFXWindow.h>
 #include <DXT/GFX/GFXInstance.h>
+#include <DXT/GFX/GFXCommandList.h>
 
 extern "C" { __declspec(dllexport) extern const UINT D3D12SDKVersion = 616; }
 extern "C" { __declspec(dllexport) extern const char8_t* D3D12SDKPath = u8".\\"; }
@@ -18,6 +19,14 @@ int main()
         {
             auto gpu = std::make_shared<DXT::GFXInstance>(gfx.GetGpus()[0]);
             auto wnd = std::make_shared<DXT::GFXWindow>(gpu, L"Test Window", 100, 100, 500, 500);
+
+            ComPointer<ID3D12CommandAllocator> cmdAllocator;
+            DXT_THROWON_HRFAIL(
+                gpu->GetDevice()->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&cmdAllocator)),
+                "ID3D12Device::CreateCommandAllocator(...) failed for type D3D12_COMMAND_LIST_TYPE_DIRECT"
+            );
+            DXT::GFXCommandList cmdList(gpu, cmdAllocator);
+
             while (!wnd->ShouldClose())
             {
                 wnd->HandlePendingWindowMessages();
@@ -27,8 +36,16 @@ int main()
                     wnd->ResizeNow();
                 }
 
-                // TODO: Work on the gpu
+                wnd->BeginFrame(cmdList, 0.6f, 0.3f, 0.9f, 1.0f);
+                wnd->EndFrame(cmdList);
+                cmdList.CloseAndExecute();
                 gpu->FlushQueue();
+                DXT_THROWON_HRFAIL(
+                    cmdAllocator->Reset(),
+                    "ID3D12CommandAllocator::Reset(...) failed"
+                );
+                cmdList.Reset(cmdAllocator);
+
                 wnd->Present();
 
                 gfx.PollDebugMessage();
