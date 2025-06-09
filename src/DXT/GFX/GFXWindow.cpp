@@ -98,23 +98,19 @@ void DXT::GFXWindow::BeginFrame(GFXCommandList& cmdList, float clearColorR, floa
 {
     m_currentBufferIndex = m_swapChain->GetCurrentBackBufferIndex();
 
-    cmdList.ResourceTransition(
-        m_buffers[m_currentBufferIndex],
-        D3D12_RESOURCE_STATE_PRESENT,
-        D3D12_RESOURCE_STATE_RENDER_TARGET
-    );
-    cmdList.FlushBarrieres();
-    cmdList.ClearRenderTarget(m_cpuBufferHandle[m_currentBufferIndex], clearColorR, clearColorG, clearColorB, clearColorA);
+    cmdList
+        .ResourceTransition(m_buffers[m_currentBufferIndex], D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET)
+        .FlushBarrieres()
+        .ClearRenderTarget(m_cpuBufferHandle[m_currentBufferIndex], clearColorR, clearColorG, clearColorB, clearColorA)
+        .PrepareDrawIntoFullRange(m_swapChainWidth, m_swapChainHeight)
+        .SetRenderTarget(m_cpuBufferHandle[m_currentBufferIndex]);
 }
 
 void DXT::GFXWindow::EndFrame(GFXCommandList& cmdList)
 {
-    cmdList.ResourceTransition(
-        m_buffers[m_currentBufferIndex],
-        D3D12_RESOURCE_STATE_RENDER_TARGET,
-        D3D12_RESOURCE_STATE_PRESENT
-    );
-    cmdList.FlushBarrieres();
+    cmdList
+        .ResourceTransition(m_buffers[m_currentBufferIndex], D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT)
+        .FlushBarrieres();
 }
 
 void DXT::GFXWindow::Present(bool vsync /*= true*/)

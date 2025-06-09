@@ -77,3 +77,31 @@ DXT::GFXCommandList& DXT::GFXCommandList::ClearRenderTarget(D3D12_CPU_DESCRIPTOR
     return *this;
 }
 
+DXT::GFXCommandList& DXT::GFXCommandList::SetRenderTarget(D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle)
+{
+    m_cmdList->OMSetRenderTargets(1, &rtvHandle, false, nullptr);
+    return *this;
+}
+
+DXT::GFXCommandList& DXT::GFXCommandList::PrepareDrawIntoFullRange(uint32_t width, uint32_t height)
+{
+    D3D12_VIEWPORT viewPort;
+    viewPort.TopLeftX = 0;
+    viewPort.TopLeftY = 0;
+    viewPort.Width = width;
+    viewPort.Height = height;
+    viewPort.MinDepth = 1.0f;
+    viewPort.MaxDepth = 0.0f;
+
+    D3D12_RECT scRect;
+    scRect.left = 0;
+    scRect.top = 0;
+    scRect.right = width;
+    scRect.bottom = height;
+
+    m_cmdList->RSSetViewports(1, &viewPort);
+    m_cmdList->RSSetScissorRects(1, &scRect);
+
+    return *this;
+}
+

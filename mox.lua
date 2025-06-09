@@ -69,6 +69,7 @@ cmox_unit_test_src = nil
 -- This function is called for each project when it's beeing configured
 function cmox_function_setupproject()
     includedirs {
+        "%{wks.location}src/DXTExternal",
         "%{wks.location}vendor/d3d12_sdk/include",
     }
 end
@@ -76,6 +77,6 @@ end
 -- This function is called in manual configuration to include 
 -- the project
 -- use: include "my-build-file.lua"
--- function cmox_function_includeprojects()
---     ...
--- end
+function cmox_function_includeprojects()
+    startproject "DXT"
+end

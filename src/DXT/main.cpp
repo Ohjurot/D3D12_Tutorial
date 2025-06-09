@@ -6,6 +6,8 @@
 #include <DXT/GFX/GFXInstance.h>
 #include <DXT/GFX/GFXCommandList.h>
 
+#include <DXT/UI/UIWindow.h>
+
 extern "C" { __declspec(dllexport) extern const UINT D3D12SDKVersion = 616; }
 extern "C" { __declspec(dllexport) extern const char8_t* D3D12SDKPath = u8".\\"; }
 
@@ -18,7 +20,7 @@ int main()
         gfx.Init();
         {
             auto gpu = std::make_shared<DXT::GFXInstance>(gfx.GetGpus()[0]);
-            auto wnd = std::make_shared<DXT::GFXWindow>(gpu, L"Test Window", 100, 100, 500, 500);
+            auto wnd = std::make_shared<DXT::UIWindow>(gpu, L"Test Window", 100, 100, 500, 500);
 
             ComPointer<ID3D12CommandAllocator> cmdAllocator;
             DXT_THROWON_HRFAIL(
@@ -27,6 +29,7 @@ int main()
             );
             DXT::GFXCommandList cmdList(gpu, cmdAllocator);
 
+            float clearColor[3] = {0, 0, 0 };
             while (!wnd->ShouldClose())
             {
                 wnd->HandlePendingWindowMessages();
@@ -35,8 +38,16 @@ int main()
                     gpu->FlushQueue(DXT::GFXWindow::BUFFER_COUNT);
                     wnd->ResizeNow();
                 }
+                wnd->ImGuiNewFrame();
 
-                wnd->BeginFrame(cmdList, 0.6f, 0.3f, 0.9f, 1.0f);
+                if (ImGui::Begin("Color"))
+                {
+                    ImGui::ColorPicker3("Colors", clearColor);
+                }
+                ImGui::End();
+
+                wnd->BeginFrame(cmdList, clearColor[0], clearColor[1], clearColor[2], 1.0f);
+                wnd->ImGuiDrawFrame(cmdList);
                 wnd->EndFrame(cmdList);
                 cmdList.CloseAndExecute();
                 gpu->FlushQueue();

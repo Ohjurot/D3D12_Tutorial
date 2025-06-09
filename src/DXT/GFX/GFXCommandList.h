@@ -71,6 +71,21 @@ namespace DXT
              */
             GFXCommandList& ClearRenderTarget(D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle, float r = .0f, float g = .0f, float b = .0f, float a = .0f);
 
+            /*!
+             * @brief Sets a single render target
+             * @param rtvHandle RTV Handle 
+             * @return Self-ref for fluent interface
+             */
+            GFXCommandList& SetRenderTarget(D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle);
+
+            /*!
+             * @brief Is preparing the viewport and scissor rectangle in a way that it occupies the full specified range
+             * @param width Width of render target
+             * @param height Height of render target
+             * @return Self-ref for fluent interface
+             */
+            GFXCommandList& PrepareDrawIntoFullRange(uint32_t width, uint32_t height);
+
             // Expose command list
 
             inline auto Get()
